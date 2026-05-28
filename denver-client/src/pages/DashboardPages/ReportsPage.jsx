@@ -1,193 +1,327 @@
-import { LineChart } from '@mui/x-charts/LineChart';
+import { useRef } from 'react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { Gauge } from '@mui/x-charts/Gauge';
 import { PieChart } from '@mui/x-charts/PieChart';
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  Divider,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material';
-import InsightsIcon from '@mui/icons-material/Insights';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
-import DonutLargeIcon from '@mui/icons-material/DonutLarge';
+import { DataGrid } from '@mui/x-data-grid';
 
-const performanceSeries = [
-  { data: [18, 26, 34, 28, 42, 51], label: 'Traffic' },
-  { data: [12, 18, 24, 31, 36, 45], label: 'Conversions' },
-];
-
-const reportCards = [
+const columns = [
+  { field: 'id', headerName: 'ID', width: 90 },
   {
-    title: 'Traffic Stability',
-    icon: <InsightsIcon color="primary" />,
-    body: 'Visits are trending upward with stronger retention in the most recent cycle.',
-    progress: 78,
+    field: 'firstName',
+    headerName: 'First name',
+    width: 150,
+    editable: true,
   },
   {
-    title: 'Content Reach',
-    icon: <ShowChartIcon color="success" />,
-    body: 'Retro game articles are receiving stronger engagement from repeat visitors.',
-    progress: 64,
+    field: 'lastName',
+    headerName: 'Last name',
+    width: 150,
+    editable: true,
   },
   {
-    title: 'Audience Split',
-    icon: <DonutLargeIcon color="warning" />,
-    body: 'Active users still form the largest segment, with pending users rising gradually.',
-    progress: 57,
+    field: 'age',
+    headerName: 'Age',
+    type: 'number',
+    width: 110,
+    editable: true,
+  },
+  {
+    field: 'fullName',
+    headerName: 'Full name',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 160,
+    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
   },
 ];
 
-const cardSx = {
-  border: '1px solid',
-  borderColor: 'divider',
-  borderRadius: 2,
-  boxShadow: '0 12px 30px rgba(15, 23, 42, 0.06)',
-};
+const rows = [
+  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
+  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
+  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
+  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
+  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+];
 
-function ReportsPage() {
+const ReportsPage = () => {
+  const printRef = useRef(null);
+
+  const handlePrint = () => {
+    const printContent = printRef.current;
+
+    if (!printContent) {
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=1200,height=900');
+
+    if (!printWindow) {
+      return;
+    }
+
+    const headMarkup = Array.from(
+      document.querySelectorAll('style, link[rel="stylesheet"]')
+    )
+      .map((node) => node.outerHTML)
+      .join('');
+
+    const exportedAt = new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'long',
+      timeStyle: 'short',
+    }).format(new Date());
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Print Report</title>
+          ${headMarkup}
+          <style>
+            @page {
+              size: A4;
+              margin: 16mm;
+            }
+
+            * {
+              box-sizing: border-box;
+            }
+
+            body {
+              margin: 0;
+              font-family: Arial, Helvetica, sans-serif;
+              background: #fff;
+              color: #1f2937;
+            }
+
+            .report-shell {
+              padding: 22px;
+              border: 2px solid #cbd5e1;
+              border-radius: 12px;
+            }
+
+            .report-header {
+              margin-bottom: 24px;
+              padding: 14px;
+              border: 1px solid #d1d5db;
+              border-radius: 10px;
+              background: #f8fafc;
+            }
+
+            .report-header h1 {
+              margin: 0 0 6px;
+              font-size: 28px;
+              font-weight: 700;
+            }
+
+            .report-header p {
+              margin: 0;
+              font-size: 14px;
+              color: #6b7280;
+              line-height: 1.5;
+            }
+
+            .report-content .MuiCard-root {
+              box-shadow: none !important;
+              border: 1px solid #e5e7eb;
+              break-inside: avoid;
+              page-break-inside: avoid;
+              border-radius: 10px;
+            }
+
+            .report-content .MuiCardContent-root {
+              padding: 20px;
+            }
+
+            .report-content svg {
+              max-width: 100%;
+            }
+
+            .report-footer {
+              margin-top: 16px;
+              padding-top: 10px;
+              border-top: 1px dashed #cbd5e1;
+              font-size: 12px;
+              color: #6b7280;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <main class="report-shell">
+            <header class="report-header">
+              <h1>Reports Summary</h1>
+              <p>Analytics overview for generated reports, category breakdown, and completion performance.</p>
+              <p>Prepared on ${exportedAt}</p>
+            </header>
+            <section class="report-content">
+              ${printContent.outerHTML}
+            </section>
+            <p class="report-footer">
+              Laboratory 5 Report Export • Generated by ReportsPage
+            </p>
+          </main>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Box
-        sx={{
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          p: { xs: 3, md: 4 },
-        }}
+    <Box>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', md: 'center' }}
+        spacing={2}
+        sx={{ mb: 4 }}
       >
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          spacing={2}
-        >
-          <Box>
-            <Typography variant="overline" color="text.secondary">
-              Reports
-            </Typography>
-            <Typography variant="h4" sx={{ mt: 0.5, fontWeight: 800 }}>
-              Charts and data visualization
-            </Typography>
-            <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 680 }}>
-              Visual reporting for traffic, conversions, and audience behavior
-              using MUI cards and chart components.
-            </Typography>
-          </Box>
-          <Chip label="Updated today" color="primary" sx={{ alignSelf: 'flex-start' }} />
-        </Stack>
-      </Box>
+        <Box>
+          <Typography variant="h4" gutterBottom>
+            Reports
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Report analytics overview showing generated reports, category
+            breakdown, and current completion performance.
+          </Typography>
+        </Box>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: 'repeat(3, minmax(0, 1fr))',
-          },
-          gap: 2,
-        }}
-      >
-        {reportCards.map(({ title, icon, body, progress }) => (
-          <Card key={title} sx={cardSx}>
+        <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+          <Button variant="contained">Generate</Button>
+          <Button variant="outlined" onClick={handlePrint}>
+            Export
+          </Button>
+          <Button variant="outlined">Filter</Button>
+        </Stack>
+      </Stack>
+
+      <Stack ref={printRef} spacing={3}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Monthly Report Output
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              This chart compares how many reports were generated and how many
+              were completed across the last four months.
+            </Typography>
+            <BarChart
+              series={[
+                {
+                  data: [18, 24, 20, 27],
+                  label: 'Generated',
+                },
+                {
+                  data: [12, 19, 17, 23],
+                  label: 'Completed',
+                },
+              ]}
+              height={300}
+              xAxis={[
+                {
+                  data: ['January', 'February', 'March', 'April'],
+                  scaleType: 'band',
+                  label: 'Months',
+                },
+              ]}
+            />
+          </CardContent>
+        </Card>
+
+        <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3}>
+          <Card sx={{ flex: 1 }}>
             <CardContent>
-              <Stack direction="row" justifyContent="space-between" spacing={2}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  {title}
-                </Typography>
-                {icon}
-              </Stack>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                {body}
+              <Typography variant="h6" gutterBottom>
+                Report Category Share
               </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={progress}
-                sx={{ mt: 3, height: 8, borderRadius: 99 }}
-              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 3 }}
+              >
+                This chart shows the distribution of report requests by
+                category for the current reporting period.
+              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        { id: 0, value: 14, label: 'Sales' },
+                        { id: 1, value: 10, label: 'Users' },
+                        { id: 2, value: 8, label: 'Inventory' },
+                        { id: 3, value: 6, label: 'Finance' },
+                      ],
+                    },
+                  ]}
+                  width={280}
+                  height={220}
+                />
+              </Box>
             </CardContent>
           </Card>
-        ))}
-      </Box>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', xl: '1.4fr 0.8fr' },
-          gap: 2,
-        }}
-      >
-        <Card sx={cardSx}>
+          <Card sx={{ flex: 1 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Completion Rate
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 3 }}
+              >
+                The gauge highlights the current percentage of reports
+                completed on time based on the latest reporting cycle.
+              </Typography>
+              <Box
+                sx={{
+                  minHeight: 220,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Gauge width={180} height={180} value={78} />
+              </Box>
+            </CardContent>
+          </Card>
+        </Stack>
+
+        <Card>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Monthly Performance Trends
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Comparison of traffic and conversions over six periods.
-            </Typography>
-            <Box sx={{ mt: 2, width: '100%', overflowX: 'auto' }}>
-              <LineChart
-                height={340}
-                series={performanceSeries}
-                xAxis={[
-                  {
-                    data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    scaleType: 'point',
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5,
                   },
-                ]}
-              />
-            </Box>
+                },
+              }}
+              pageSizeOptions={[5]}
+              checkboxSelection
+              disableRowSelectionOnClick
+            />
           </CardContent>
         </Card>
-
-        <Card sx={cardSx}>
-          <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Traffic Sources
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              User acquisition by channel.
-            </Typography>
-            <Stack alignItems="center" spacing={2} sx={{ mt: 2 }}>
-              <PieChart
-                width={300}
-                height={240}
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: 40, label: 'Organic' },
-                      { id: 1, value: 25, label: 'Direct' },
-                      { id: 2, value: 20, label: 'Social' },
-                      { id: 3, value: 15, label: 'Referral' },
-                    ],
-                  },
-                ]}
-              />
-            </Stack>
-            <Divider sx={{ my: 2 }} />
-            <Stack spacing={1.5}>
-              {[
-                ['Organic', 'Best-performing source this month'],
-                ['Direct', 'Strong repeat visitor behavior'],
-                ['Social', 'Growing campaign traction'],
-              ].map(([label, note]) => (
-                <Box key={label}>
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    {label}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {note}
-                  </Typography>
-                </Box>
-              ))}
-            </Stack>
-          </CardContent>
-        </Card>
-      </Box>
+      </Stack>
     </Box>
   );
-}
+};
 
 export default ReportsPage;
