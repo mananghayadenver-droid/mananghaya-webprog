@@ -42,6 +42,18 @@ function NavBar() {
               {link.label}
             </NavLink>
           ))}
+          <NavLink
+            to="/auth/signin"
+            className="rounded-full border-2 border-zinc-900 bg-fuchsia-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-fuchsia-300"
+          >
+            Sign In
+          </NavLink>
+          <NavLink
+            to="/auth/signup"
+            className="rounded-full border-2 border-zinc-900 bg-lime-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-lime-300"
+          >
+            Sign Up
+          </NavLink>
         </div>
       </nav>
     </header>
