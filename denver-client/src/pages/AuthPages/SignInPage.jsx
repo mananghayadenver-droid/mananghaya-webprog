@@ -1,9 +1,36 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { DEFAULT_LOGIN, isAuthenticated, signIn } from '../../utils/auth';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border-2 border-zinc-900 bg-white px-4 py-3 text-sm text-zinc-950 shadow-[4px_4px_0_#18181b] outline-none transition placeholder:text-zinc-400 focus:-translate-y-0.5 focus:bg-yellow-50';
 
 const SignInPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState(DEFAULT_LOGIN.email);
+  const [password, setPassword] = useState(DEFAULT_LOGIN.password);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const success = signIn(email.trim(), password);
+
+    if (success) {
+      setError('');
+      navigate('/dashboard');
+      return;
+    }
+
+    setError('Use the default admin login shown below to access the dashboard.');
+  };
+
   return (
     <section className="overflow-hidden rounded-[2rem] border-2 border-zinc-900 bg-white shadow-[12px_12px_0_#18181b]">
       <div className="border-b-2 border-zinc-900 bg-[linear-gradient(135deg,#18181b_0%,#3f3f46_100%)] px-7 py-6 text-white">
@@ -19,7 +46,10 @@ const SignInPage = () => {
         </p>
       </div>
 
-      <form className="space-y-5 bg-[linear-gradient(180deg,#ffffff_0%,#fefce8_100%)] px-7 py-7">
+      <form
+        className="space-y-5 bg-[linear-gradient(180deg,#ffffff_0%,#fefce8_100%)] px-7 py-7"
+        onSubmit={handleSubmit}
+      >
         <div className="grid grid-cols-3 gap-2 rounded-2xl border-2 border-zinc-900 bg-zinc-100 p-3">
           <div className="rounded-lg border border-zinc-900 bg-fuchsia-300 px-3 py-2 text-center text-[10px] font-black uppercase tracking-[0.18em] text-zinc-950">
             Save
@@ -42,6 +72,8 @@ const SignInPage = () => {
             placeholder="you@example.com"
             autoComplete="email"
             className={inputClasses}
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           />
         </div>
 
@@ -55,11 +87,19 @@ const SignInPage = () => {
             placeholder="Enter your password"
             autoComplete="current-password"
             className={inputClasses}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <p className="mt-2 text-xs leading-5 text-zinc-500">
             Use at least 8 characters with letters, numbers, and symbols.
           </p>
         </div>
+
+        {error ? (
+          <div className="rounded-xl border-2 border-red-400 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+            {error}
+          </div>
+        ) : null}
 
         <div className="flex items-center justify-between gap-4 text-sm">
           <label className="flex items-center gap-2 text-zinc-600">

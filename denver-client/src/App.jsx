@@ -8,8 +8,12 @@ import AboutPage from './pages/LandingPages/AboutPage';
 import ArticleListPage from './pages/LandingPages/ArticleListPage';
 
 import AuthLayout from './layouts/AuthLayout';
+import DashLayout from './layouts/DashLayout';
 import SignInPage from './pages/AuthPages/SignInPage';
 import SignUpPage from './pages/AuthPages/SignUpPage';
+import DashboardPage from './pages/DashboardPages/DashboardPage';
+import ReportsPage from './pages/DashboardPages/ReportsPage';
+import UsersPage from './pages/DashboardPages/UsersPage';
 
 import NotFoundPage from './pages/NotFoundPage';
 import './assets/styles/index.css';
@@ -50,6 +54,25 @@ const routes = [
       {
         path: 'signup',
         element: <SignUpPage />,
+      },
+    ],
+  },
+  {
+    path: 'dashboard/',
+    element: <DashLayout />,
+    errorElement: <NotFoundPage />,
+    children: [
+      {
+        path: '',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'reports',
+        element: <ReportsPage />,
+      },
+      {
+        path: 'users',
+        element: <UsersPage />,
       },
     ],
   },
