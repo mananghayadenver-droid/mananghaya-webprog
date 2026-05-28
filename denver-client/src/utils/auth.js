@@ -1,25 +1,39 @@
-export const DEFAULT_LOGIN = {
-  email: 'mananghaya@admin.com',
-  password: 'mananghaya123',
-};
-
-export const AUTH_STORAGE_KEY = 'denver-client-auth';
+export const AUTH_TOKEN_KEY = 'denver-client-token';
+export const AUTH_FIRST_NAME_KEY = 'denver-client-first-name';
+export const AUTH_TYPE_KEY = 'denver-client-type';
 
 export function isAuthenticated() {
-  return localStorage.getItem(AUTH_STORAGE_KEY) === 'true';
+  return Boolean(localStorage.getItem(AUTH_TOKEN_KEY));
 }
 
-export function signIn(email, password) {
-  const matches =
-    email === DEFAULT_LOGIN.email && password === DEFAULT_LOGIN.password;
-
-  if (matches) {
-    localStorage.setItem(AUTH_STORAGE_KEY, 'true');
+export function setAuthSession({ token, firstName, type }) {
+  if (token) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
   }
 
-  return matches;
+  if (firstName) {
+    localStorage.setItem(AUTH_FIRST_NAME_KEY, firstName);
+  }
+
+  if (type) {
+    localStorage.setItem(AUTH_TYPE_KEY, type);
+  }
+}
+
+export function getAuthToken() {
+  return localStorage.getItem(AUTH_TOKEN_KEY) || '';
+}
+
+export function getAuthType() {
+  return localStorage.getItem(AUTH_TYPE_KEY) || '';
+}
+
+export function getAuthFirstName() {
+  return localStorage.getItem(AUTH_FIRST_NAME_KEY) || '';
 }
 
 export function signOut() {
-  localStorage.removeItem(AUTH_STORAGE_KEY);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_FIRST_NAME_KEY);
+  localStorage.removeItem(AUTH_TYPE_KEY);
 }

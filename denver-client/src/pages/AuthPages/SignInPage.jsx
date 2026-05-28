@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { DEFAULT_LOGIN, isAuthenticated, signIn } from '../../utils/auth';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/UserService';
+import { isAuthenticated, setAuthSession } from '../../utils/auth';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border-2 border-zinc-900 bg-white px-4 py-3 text-sm text-zinc-950 shadow-[4px_4px_0_#18181b] outline-none transition placeholder:text-zinc-400 focus:-translate-y-0.5 focus:bg-yellow-50';
 
+const defaultCredentials = {
+  email: 'mananghaya@admin.com',
+  password: 'mananghaya123',
+};
+
 const SignInPage = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState(DEFAULT_LOGIN.email);
-  const [password, setPassword] = useState(DEFAULT_LOGIN.password);
+  const location = useLocation();
+  const [email, setEmail] = useState(defaultCredentials.email);
+  const [password, setPassword] = useState(defaultCredentials.password);
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const successMessage = location.state?.message || '';
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -17,18 +26,29 @@ const SignInPage = () => {
     }
   }, [navigate]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setSubmitting(true);
+    setError('');
 
-    const success = signIn(email.trim(), password);
+    try {
+      const { data } = await loginUser({
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
-    if (success) {
+      setAuthSession({
+        token: data.token,
+        firstName: data.firstName,
+        type: data.type,
+      });
       setError('');
       navigate('/dashboard');
-      return;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
-
-    setError('Use the default admin login shown below to access the dashboard.');
   };
 
   return (
@@ -101,6 +121,12 @@ const SignInPage = () => {
           </div>
         ) : null}
 
+        {successMessage ? (
+          <div className="rounded-xl border-2 border-lime-400 bg-lime-50 px-4 py-3 text-sm font-semibold text-lime-800">
+            {successMessage}
+          </div>
+        ) : null}
+
         <div className="flex items-center justify-between gap-4 text-sm">
           <label className="flex items-center gap-2 text-zinc-600">
             <input
@@ -119,9 +145,10 @@ const SignInPage = () => {
 
         <button
           type="submit"
+          disabled={submitting}
           className="w-full rounded-xl border-2 border-zinc-900 bg-fuchsia-300 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-zinc-950 shadow-[5px_5px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-fuchsia-400 focus:outline-none"
         >
-          Press Start
+          {submitting ? 'Loading...' : 'Press Start'}
         </button>
 
         <div className="grid gap-3 pt-2 sm:grid-cols-2">

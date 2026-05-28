@@ -22,8 +22,9 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import ArticleIcon from '@mui/icons-material/Article';
 import Button from '@mui/material/Button';
-import { isAuthenticated, signOut } from '../utils/auth';
+import { getAuthType, isAuthenticated, signOut } from '../utils/auth';
 
 const drawerWidth = 240;
 
@@ -39,6 +40,12 @@ const dashboardNavItems = [
     title: 'Reports',
     to: '/dashboard/reports',
     icon: <AssessmentIcon />,
+  },
+  {
+    label: 'Articles',
+    title: 'Articles',
+    to: '/dashboard/articles',
+    icon: <ArticleIcon />,
   },
   {
     label: 'Users',
@@ -161,12 +168,22 @@ const DashLayout = () => {
   const pageTitle = getPageTitle(location.pathname);
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
+  const authType = String(getAuthType() || '').toLowerCase();
+  const canAccessUsersPage = authType !== 'editor' && authType !== 'viewer';
+  const visibleNavItems = dashboardNavItems.filter(
+    (item) => item.to !== '/dashboard/users' || canAccessUsersPage
+  );
 
   useEffect(() => {
     if (!authenticated) {
       navigate('/auth/signin');
+      return;
     }
-  }, [authenticated, navigate]);
+
+    if (!canAccessUsersPage && location.pathname === '/dashboard/users') {
+      navigate('/dashboard/articles');
+    }
+  }, [authenticated, canAccessUsersPage, location.pathname, navigate]);
 
   if (!authenticated) {
     return null;
@@ -233,7 +250,7 @@ const DashLayout = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {dashboardNavItems.map(({ label, to, icon }) => (
+          {visibleNavItems.map(({ label, to, icon }) => (
             <ListItem key={to} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 component={Link}

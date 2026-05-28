@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Box,
@@ -24,6 +24,11 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { DataGrid } from '@mui/x-data-grid';
 import usersSeed from '../../data/users.json?raw';
+import {
+  createUser,
+  fetchUsers,
+  updateUser,
+} from '../../services/UserService';
 
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
@@ -90,6 +95,51 @@ const UsersPage = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [genderFilter, setGenderFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [confirmation, setConfirmation] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(seed.error);
+
+  const loadUsersFromApi = useCallback(async () => {
+    setLoading(true);
+    setLoadError('');
+
+    try {
+      const { data } = await fetchUsers();
+      const incoming = Array.isArray(data) ? data : [];
+      setUsers(
+        incoming.map((user, index) => ({
+          id: user._id || Number(user.id) || index + 1,
+          firstName: String(user.firstName ?? '').trim(),
+          lastName: String(user.lastName ?? '').trim(),
+          age: String(user.age ?? '').trim(),
+          gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
+            ? String(user.gender ?? '').trim().toLowerCase()
+            : '',
+          contactNumber: String(user.contactNumber ?? '').trim(),
+          email: String(user.email ?? '').trim().toLowerCase(),
+          role: roles.includes(String(user.role ?? '').trim().toLowerCase())
+            ? String(user.role ?? '').trim().toLowerCase()
+            : 'editor',
+          username: String(user.username ?? '').trim().toLowerCase(),
+          password: '',
+          address: String(user.address ?? '').trim(),
+          isActive: typeof user.isActive === 'boolean' ? user.isActive : true,
+        }))
+      );
+    } catch (error) {
+      setUsers(seed.users);
+      setLoadError(
+        error.response?.data?.message ||
+          'Unable to fetch users from server. Showing local seed data.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadUsersFromApi();
+  }, [loadUsersFromApi]);
 
   const resetForm = () => {
     setForm({ ...blankForm });
@@ -100,6 +150,7 @@ const UsersPage = () => {
     setModal({ open: true, id: user?.id ?? null });
     setForm(user ? { ...blankForm, ...user } : { ...blankForm });
     setErrors({});
+    setShowPassword(false);
   };
 
   const closeModal = () => {
@@ -136,7 +187,6 @@ const UsersPage = () => {
       ['email', 'Email'],
       ['role', 'Role'],
       ['username', 'Username'],
-      ['password', 'Password'],
       ['address', 'Address'],
     ].forEach(([key, label]) => {
       if (!String(form[key]).trim()) {
@@ -144,7 +194,11 @@ const UsersPage = () => {
       }
     });
 
-    if (nextErrors.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!modal.id && !password) {
+      nextErrors.password = 'Password is required.';
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       nextErrors.email = 'Enter a valid email address.';
     }
 
@@ -181,7 +235,7 @@ const UsersPage = () => {
     return nextErrors;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const nextErrors = validate();
 
@@ -204,27 +258,48 @@ const UsersPage = () => {
       isActive: form.isActive,
     };
 
-    setUsers((prev) =>
-      modal.id
-        ? prev.map((user) => (user.id === modal.id ? { ...user, ...nextUser } : user))
-        : [
-            ...prev,
-            {
-              id: prev.reduce((max, user) => Math.max(max, Number(user.id) || 0), 0) + 1,
-              ...nextUser,
-            },
-          ]
-    );
+    try {
+      if (modal.id) {
+        const payload = { ...nextUser };
 
-    closeModal();
+        if (!payload.password) {
+          delete payload.password;
+        }
+
+        await updateUser(modal.id, payload);
+        setConfirmation('User updated successfully.');
+      } else {
+        await createUser(nextUser);
+        setConfirmation('New user saved successfully.');
+      }
+
+      closeModal();
+      await loadUsersFromApi();
+    } catch (error) {
+      setLoadError(error.response?.data?.message || 'Unable to save user.');
+    }
   };
 
-  const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
-      )
-    );
+  const toggleStatus = async (id) => {
+    const selectedUser = users.find((user) => user.id === id);
+
+    if (!selectedUser) {
+      return;
+    }
+
+    try {
+      await updateUser(id, { isActive: !selectedUser.isActive });
+      setConfirmation(
+        `${selectedUser.firstName} ${selectedUser.lastName} is now ${
+          selectedUser.isActive ? 'inactive' : 'active'
+        }.`
+      );
+      await loadUsersFromApi();
+    } catch (error) {
+      setLoadError(
+        error.response?.data?.message || 'Unable to update user status.'
+      );
+    }
   };
 
   const fieldProps = (name, label, extra = {}) => ({
@@ -340,9 +415,19 @@ const UsersPage = () => {
         </Button>
       </Box>
 
-      {seed.error ? (
+      {loadError ? (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {seed.error}
+          {loadError}
+        </Alert>
+      ) : null}
+
+      {confirmation ? (
+        <Alert
+          severity="success"
+          onClose={() => setConfirmation('')}
+          sx={{ mb: 2 }}
+        >
+          {confirmation}
         </Alert>
       ) : null}
 
@@ -413,7 +498,9 @@ const UsersPage = () => {
                 <DataGrid
                   rows={filteredUsers}
                   columns={columns}
+                  getRowId={(row) => row.id}
                   disableRowSelectionOnClick
+                  loading={loading}
                   pageSizeOptions={[5, 10]}
                   initialState={{
                     pagination: { paginationModel: { pageSize: 5, page: 0 } },

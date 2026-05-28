@@ -1,8 +1,14 @@
+import { useMemo } from 'react'
 import Button from '../components/Button'
 import ArticleList from '../components/ArticleList'
-import articles from '../assets/styles/article-content.js'
+import { getArticles } from '../utils/articleStore'
 
 const ArticleListPage = () => {
+  const articles = useMemo(
+    () => getArticles().filter((article) => article.isPublished !== false),
+    []
+  )
+
   return (
     <div className="flex w-full flex-col gap-5">
       <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">

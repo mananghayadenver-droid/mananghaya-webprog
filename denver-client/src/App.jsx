@@ -14,6 +14,7 @@ import SignUpPage from './pages/AuthPages/SignUpPage';
 import DashboardPage from './pages/DashboardPages/DashboardPage';
 import ReportsPage from './pages/DashboardPages/ReportsPage';
 import UsersPage from './pages/DashboardPages/UsersPage';
+import DashArticleListPage from './pages/DashboardPages/DashArticleListPage';
 
 import NotFoundPage from './pages/NotFoundPage';
 import './assets/styles/index.css';
@@ -69,6 +70,10 @@ const routes = [
       {
         path: 'reports',
         element: <ReportsPage />,
+      },
+      {
+        path: 'articles',
+        element: <DashArticleListPage />,
       },
       {
         path: 'users',

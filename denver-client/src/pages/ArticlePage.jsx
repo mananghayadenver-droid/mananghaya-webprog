@@ -1,10 +1,17 @@
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import Button from '../components/Button'
-import articles from '../assets/styles/article-content.js'
+import { getArticles } from '../utils/articleStore'
 
 function ArticlePage() {
   const { name } = useParams()
-  const article = articles.find((item) => item.name === name)
+  const article = useMemo(
+    () =>
+      getArticles().find(
+        (item) => item.name === name && item.isPublished !== false
+      ),
+    [name]
+  )
 
   if (!article) {
     return (
