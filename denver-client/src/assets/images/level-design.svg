@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#ede9fe"/>
+  <path d="M120 400h120V280h120V180h120v120h120v100h80" fill="none" stroke="#111827" stroke-width="34" stroke-linejoin="round"/>
+  <circle cx="145" cy="400" r="28" fill="#22c55e"/>
+  <rect x="610" y="338" width="60" height="60" fill="#ef4444"/>
+  <text x="400" y="535" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111827">Level Design</text>
+</svg>

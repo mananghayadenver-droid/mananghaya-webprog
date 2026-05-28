@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#fdf2f8"/>
+  <rect x="170" y="190" width="120" height="150" fill="#111827"/>
+  <path d="M290 235 430 150v230L290 295z" fill="#111827"/>
+  <path d="M485 205c45 40 45 100 0 140M545 160c80 75 80 225 0 300" fill="none" stroke="#db2777" stroke-width="24" stroke-linecap="round"/>
+  <text x="400" y="535" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111827">Retro Sound</text>
+</svg>

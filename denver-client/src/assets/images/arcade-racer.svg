@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#fef3c7"/>
+  <path d="M280 600 360 0h80l80 600z" fill="#374151"/>
+  <path d="M400 30v90M400 180v90M400 330v90M400 480v80" stroke="#f8fafc" stroke-width="16" stroke-linecap="round"/>
+  <rect x="290" y="340" width="95" height="150" rx="20" fill="#ef4444"/>
+  <rect x="415" y="240" width="95" height="150" rx="20" fill="#3b82f6"/>
+  <text x="400" y="535" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111827">Arcade Racer</text>
+</svg>

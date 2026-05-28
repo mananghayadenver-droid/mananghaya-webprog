@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#dcfce7"/>
+  <ellipse cx="400" cy="275" rx="115" ry="150" fill="#22c55e"/>
+  <path d="M300 250 180 150M500 250l120-100M315 340 180 450M485 340l135 110" stroke="#15803d" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="360" cy="215" r="22" fill="#111827"/>
+  <circle cx="440" cy="215" r="22" fill="#111827"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Mantis</text>
+</svg>

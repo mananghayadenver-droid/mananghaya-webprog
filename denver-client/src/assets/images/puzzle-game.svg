@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#ecfeff"/>
+  <g stroke="#111827" stroke-width="12">
+    <rect x="210" y="130" width="120" height="120" fill="#ef4444"/>
+    <rect x="330" y="130" width="120" height="120" fill="#facc15"/>
+    <rect x="450" y="130" width="120" height="120" fill="#22c55e"/>
+    <rect x="270" y="250" width="120" height="120" fill="#3b82f6"/>
+    <rect x="390" y="250" width="120" height="120" fill="#a855f7"/>
+  </g>
+  <text x="400" y="535" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111827">Puzzle Game</text>
+</svg>

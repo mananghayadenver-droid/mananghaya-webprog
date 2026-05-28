@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#ffedd5"/>
+  <ellipse cx="400" cy="275" rx="115" ry="155" fill="#f8fafc"/>
+  <path d="M335 165c35-70 95-70 130 0" stroke="#ef4444" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <circle cx="360" cy="245" r="15" fill="#111827"/>
+  <circle cx="440" cy="245" r="15" fill="#111827"/>
+  <path d="M375 300h50l-25 38z" fill="#f97316"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Mr. Ping</text>
+</svg>

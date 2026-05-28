@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#fef3c7"/>
+  <circle cx="400" cy="260" r="145" fill="#a16207"/>
+  <circle cx="300" cy="260" r="58" fill="#92400e"/>
+  <circle cx="500" cy="260" r="58" fill="#92400e"/>
+  <ellipse cx="400" cy="300" rx="95" ry="75" fill="#fde68a"/>
+  <circle cx="355" cy="245" r="16" fill="#111827"/>
+  <circle cx="445" cy="245" r="16" fill="#111827"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Monkey</text>
+</svg>

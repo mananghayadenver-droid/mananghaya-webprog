@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#f0fdf4"/>
+  <circle cx="260" cy="250" r="80" fill="#facc15" stroke="#111827" stroke-width="14"/>
+  <path d="m260 170 22 55 58 5-44 38 14 57-50-30-50 30 14-57-44-38 58-5z" fill="#ef4444"/>
+  <rect x="440" y="170" width="130" height="160" rx="20" fill="#22c55e" stroke="#111827" stroke-width="14"/>
+  <text x="505" y="275" text-anchor="middle" font-family="Arial, sans-serif" font-size="80" font-weight="700" fill="#f8fafc">+</text>
+  <text x="400" y="535" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#111827">Power Ups</text>
+</svg>

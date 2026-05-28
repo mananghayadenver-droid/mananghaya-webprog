@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#e5e7eb"/>
+  <circle cx="400" cy="260" r="150" fill="#64748b"/>
+  <path d="M310 180h180M295 230h210M330 330h140" stroke="#111827" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="345" cy="255" r="18" fill="#fef08a"/>
+  <circle cx="455" cy="255" r="18" fill="#fef08a"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Tai Lung</text>
+</svg>

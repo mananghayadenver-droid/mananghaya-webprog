@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#e0f2fe"/>
+  <ellipse cx="400" cy="280" rx="90" ry="135" fill="#f8fafc"/>
+  <path d="M310 260 120 170M490 260l190-90M400 160l50-95" stroke="#94a3b8" stroke-width="34" stroke-linecap="round"/>
+  <circle cx="372" cy="220" r="14" fill="#111827"/>
+  <circle cx="430" cy="220" r="14" fill="#111827"/>
+  <path d="M400 245l50 28-50 28z" fill="#f59e0b"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Crane</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#ede9fe"/>
+  <path d="M220 360c90-180 260 20 360-150 35-60-10-110-80-100-90 13-130 110-82 165" fill="none" stroke="#16a34a" stroke-width="70" stroke-linecap="round"/>
+  <circle cx="520" cy="120" r="16" fill="#111827"/>
+  <circle cx="570" cy="138" r="16" fill="#111827"/>
+  <text x="400" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#111827">Viper</text>
+</svg>
