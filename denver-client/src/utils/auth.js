@@ -7,6 +7,8 @@ export function isAuthenticated() {
 }
 
 export function setAuthSession({ token, firstName, type }) {
+  signOut();
+
   if (token) {
     localStorage.setItem(AUTH_TOKEN_KEY, token);
   }

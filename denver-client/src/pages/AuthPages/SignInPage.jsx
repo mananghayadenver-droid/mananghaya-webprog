@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/UserService';
-import { getAuthType, isAuthenticated, setAuthSession } from '../../utils/auth';
+import { setAuthSession } from '../../utils/auth';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border-2 border-zinc-900 bg-white px-4 py-3 text-sm text-zinc-950 shadow-[4px_4px_0_#18181b] outline-none transition placeholder:text-zinc-400 focus:-translate-y-0.5 focus:bg-yellow-50';
 
 const defaultCredentials = {
-  email: '',
-  password: '',
+  email: 'mananghaya@admin.com',
+  password: 'mananghaya123',
 };
 
 const SignInPage = () => {
@@ -18,18 +18,15 @@ const SignInPage = () => {
   const [password, setPassword] = useState(defaultCredentials.password);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const successMessage = location.state?.message || '';
-
-  useEffect(() => {
-    if (isAuthenticated()) {
-      navigate(getAuthType() === 'admin' ? '/dashboard' : '/');
-    }
-  }, [navigate]);
+  const [successMessage, setSuccessMessage] = useState(
+    location.state?.message || ''
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
     setError('');
+    setSuccessMessage('');
 
     try {
       const { data } = await loginUser({
@@ -84,16 +81,21 @@ const SignInPage = () => {
 
         <div>
           <label htmlFor="signin-email" className="text-sm font-semibold text-zinc-800">
-            Email Address
+            Email Address or Username
           </label>
           <input
             id="signin-email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
+            type="text"
+            placeholder="you@example.com or username"
+            autoComplete="username"
             className={inputClasses}
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              setError('');
+              setSuccessMessage('');
+            }}
+            required
           />
         </div>
 
@@ -108,7 +110,12 @@ const SignInPage = () => {
             autoComplete="current-password"
             className={inputClasses}
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setError('');
+              setSuccessMessage('');
+            }}
+            required
           />
           <p className="mt-2 text-xs leading-5 text-zinc-500">
             Use at least 8 characters with letters, numbers, and symbols.

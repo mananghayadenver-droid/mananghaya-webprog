@@ -1,4 +1,11 @@
-import { NavLink } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  getAuthFirstName,
+  getAuthType,
+  isAuthenticated,
+  signOut,
+} from '../utils/auth'
 
 const links = [
   { label: 'Home', to: '/' },
@@ -15,6 +22,17 @@ const navLinkClassName = ({ isActive }) =>
   ].join(' ')
 
 function NavBar() {
+  const navigate = useNavigate()
+  const [authenticated, setAuthenticated] = useState(isAuthenticated())
+  const firstName = getAuthFirstName()
+  const authType = getAuthType()
+
+  const handleLogout = () => {
+    signOut()
+    setAuthenticated(false)
+    navigate('/')
+  }
+
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-zinc-900 bg-white/95 shadow-[0_4px_0_rgba(24,24,27,0.12)] backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
@@ -42,18 +60,43 @@ function NavBar() {
               {link.label}
             </NavLink>
           ))}
-          <NavLink
-            to="/auth/signin"
-            className="rounded-full border-2 border-zinc-900 bg-fuchsia-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-fuchsia-300"
-          >
-            Sign In
-          </NavLink>
-          <NavLink
-            to="/auth/signup"
-            className="rounded-full border-2 border-zinc-900 bg-lime-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-lime-300"
-          >
-            Sign Up
-          </NavLink>
+          {authenticated ? (
+            <>
+              <span className="min-w-fit px-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-700">
+                Hi, {firstName || 'Player'}
+              </span>
+              {authType === 'admin' ? (
+                <NavLink
+                  to="/dashboard"
+                  className="rounded-full border-2 border-zinc-900 bg-lime-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-lime-300"
+                >
+                  Dashboard
+                </NavLink>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-full border-2 border-zinc-900 bg-fuchsia-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-fuchsia-300"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink
+                to="/auth/signin"
+                className="rounded-full border-2 border-zinc-900 bg-fuchsia-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-fuchsia-300"
+              >
+                Sign In
+              </NavLink>
+              <NavLink
+                to="/auth/signup"
+                className="rounded-full border-2 border-zinc-900 bg-lime-200 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-950 shadow-[3px_3px_0_#18181b] transition hover:-translate-y-0.5 hover:bg-lime-300"
+              >
+                Sign Up
+              </NavLink>
+            </>
+          )}
         </div>
       </nav>
     </header>

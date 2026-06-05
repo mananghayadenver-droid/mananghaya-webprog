@@ -2,6 +2,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const isConfiguredAdmin = (email, password) =>
+  String(email || '').trim().toLowerCase() ===
+    String(process.env.ADMIN_EMAIL || '').trim().toLowerCase() &&
+  String(password || '') === String(process.env.ADMIN_PASSWORD || '');
+
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}, '-password').sort({ createdAt: -1 });
@@ -17,10 +22,22 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: 'Password is required' });
     }
 
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const createAsAdmin = isConfiguredAdmin(email, req.body.password);
+
+    if (createAsAdmin) {
+      const existingAdmin = await User.findOne({ role: 'admin' });
+
+      if (existingAdmin && String(existingAdmin.email).toLowerCase() !== email) {
+        return res.status(409).json({ message: 'An admin account already exists' });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = await User.create({
       ...req.body,
-      role: 'user',
+      email,
+      role: createAsAdmin ? 'admin' : 'user',
       isActive: true,
       password: hashedPassword,
     });
@@ -91,7 +108,10 @@ const deleteUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: String(email || '').toLowerCase() });
+    const identifier = String(email || '').trim().toLowerCase();
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -107,6 +127,17 @@ const loginUser = async (req, res) => {
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (isConfiguredAdmin(user.email, password) && user.role !== 'admin') {
+      const existingAdmin = await User.findOne({ role: 'admin' });
+
+      if (existingAdmin && !existingAdmin._id.equals(user._id)) {
+        return res.status(409).json({ message: 'An admin account already exists' });
+      }
+
+      user.role = 'admin';
+      await user.save();
     }
 
     const userType = user.role === 'admin' ? 'admin' : 'user';
