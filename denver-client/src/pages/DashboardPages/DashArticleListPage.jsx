@@ -30,11 +30,6 @@ const blankForm = {
   isPublished: true,
 };
 
-const imageOptions = getArticles().map((article) => ({
-  label: article.title,
-  value: article.image,
-}));
-
 const toSlug = (value) =>
   String(value || '')
     .trim()
@@ -74,7 +69,6 @@ const DashArticleListPage = () => {
           }
         : {
             ...blankForm,
-            image: imageOptions[0]?.value || '',
           }
     );
   };
@@ -112,8 +106,12 @@ const DashArticleListPage = () => {
       nextErrors.name = 'Slug is required.';
     }
 
-    if (!form.image) {
-      nextErrors.image = 'Choose an image.';
+    const image = String(form.image || '').trim();
+
+    if (!image) {
+      nextErrors.image = 'Image URL is required.';
+    } else if (!/^(https?:\/\/|\/)/i.test(image)) {
+      nextErrors.image = 'Use a full image URL or a path that starts with /.';
     }
 
     if (!content.length) {
@@ -367,20 +365,16 @@ const DashArticleListPage = () => {
               </Stack>
               <TextField
                 name="image"
-                label="Image"
+                label="Image URL"
                 value={form.image}
                 onChange={handleChange}
                 error={Boolean(errors.image)}
-                helperText={errors.image}
-                select
+                helperText={
+                  errors.image ||
+                  'Paste an image link, for example: https://example.com/image.jpg'
+                }
                 fullWidth
-              >
-                {imageOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </TextField>
+              />
               <TextField
                 name="content"
                 label="Content"
