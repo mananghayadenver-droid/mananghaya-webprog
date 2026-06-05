@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/UserService';
-import { isAuthenticated, setAuthSession } from '../../utils/auth';
+import { getAuthType, isAuthenticated, setAuthSession } from '../../utils/auth';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border-2 border-zinc-900 bg-white px-4 py-3 text-sm text-zinc-950 shadow-[4px_4px_0_#18181b] outline-none transition placeholder:text-zinc-400 focus:-translate-y-0.5 focus:bg-yellow-50';
 
 const defaultCredentials = {
-  email: 'mananghaya@admin.com',
-  password: 'mananghaya123',
+  email: '',
+  password: '',
 };
 
 const SignInPage = () => {
@@ -22,7 +22,7 @@ const SignInPage = () => {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate('/dashboard');
+      navigate(getAuthType() === 'admin' ? '/dashboard' : '/');
     }
   }, [navigate]);
 
@@ -43,7 +43,7 @@ const SignInPage = () => {
         type: data.type,
       });
       setError('');
-      navigate('/dashboard');
+      navigate(data.type === 'admin' ? '/dashboard' : '/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {

@@ -18,7 +18,12 @@ const createUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create({ ...req.body, password: hashedPassword });
+    const user = await User.create({
+      ...req.body,
+      role: 'user',
+      isActive: true,
+      password: hashedPassword,
+    });
     const safeUser = user.toObject();
     delete safeUser.password;
 
@@ -31,6 +36,17 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const payload = { ...req.body };
+    delete payload.role;
+
+    const existingUser = await User.findById(req.params.id);
+
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (existingUser.role === 'admin' && payload.isActive === false) {
+      return res.status(400).json({ message: 'The admin account cannot be disabled' });
+    }
 
     if (payload.password) {
       payload.password = await bcrypt.hash(payload.password, 10);
@@ -54,11 +70,17 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const existingUser = await User.findById(req.params.id);
 
-    if (!user) {
+    if (!existingUser) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    if (existingUser.role === 'admin') {
+      return res.status(400).json({ message: 'The admin account cannot be deleted' });
+    }
+
+    await existingUser.deleteOne();
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -81,19 +103,13 @@ const loginUser = async (req, res) => {
       });
     }
 
-    if (String(user.role || '').toLowerCase() === 'viewer') {
-      return res.status(403).json({
-        message: 'Viewer accounts are not allowed to log in.',
-      });
-    }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const userType = user.role || 'viewer';
+    const userType = user.role === 'admin' ? 'admin' : 'user';
     const token = jwt.sign(
       { id: user._id, email: user.email, type: userType },
       process.env.JWT_SECRET,

@@ -30,7 +30,7 @@ import {
   updateUser,
 } from '../../services/UserService';
 
-const roles = ['admin', 'editor', 'viewer'];
+const roles = ['admin', 'user'];
 const genders = ['male', 'female', 'other'];
 
 const blankForm = {
@@ -40,7 +40,7 @@ const blankForm = {
   gender: '',
   contactNumber: '',
   email: '',
-  role: 'editor',
+  role: 'user',
   username: '',
   password: '',
   address: '',
@@ -65,7 +65,7 @@ const loadUsers = () => {
         email: String(user.email ?? '').trim().toLowerCase(),
         role: roles.includes(String(user.role ?? '').trim().toLowerCase())
           ? String(user.role ?? '').trim().toLowerCase()
-          : 'editor',
+          : 'user',
         username: String(user.username ?? '').trim().toLowerCase(),
         password: String(user.password ?? ''),
         address: String(user.address ?? '').trim(),
@@ -119,7 +119,7 @@ const UsersPage = () => {
           email: String(user.email ?? '').trim().toLowerCase(),
           role: roles.includes(String(user.role ?? '').trim().toLowerCase())
             ? String(user.role ?? '').trim().toLowerCase()
-            : 'editor',
+            : 'user',
           username: String(user.username ?? '').trim().toLowerCase(),
           password: '',
           address: String(user.address ?? '').trim(),
@@ -251,7 +251,6 @@ const UsersPage = () => {
       gender: form.gender.trim().toLowerCase(),
       contactNumber: form.contactNumber.trim(),
       email: form.email.trim().toLowerCase(),
-      role: form.role.trim().toLowerCase(),
       username: form.username.trim().toLowerCase(),
       password: form.password,
       address: form.address.trim(),
@@ -558,13 +557,12 @@ const UsersPage = () => {
                 />
               </Stack>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <TextField {...fieldProps('role', 'Role', { select: true })}>
-                  {roles.map((role) => (
-                    <MenuItem key={role} value={role}>
-                      {labelize(role)}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                <TextField
+                  {...fieldProps('role', 'Role', {
+                    disabled: true,
+                    helperText: 'New accounts are users. The admin role cannot be reassigned.',
+                  })}
+                />
                 <TextField {...fieldProps('username', 'Username')} />
               </Stack>
               <TextField

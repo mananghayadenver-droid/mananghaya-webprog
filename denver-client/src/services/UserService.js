@@ -1,4 +1,5 @@
 import constants from '../constants';
+import { getAuthToken } from '../utils/auth';
 
 const HOST = String(constants.HOST || '').replace(/\/$/, '');
 const BASE_URL = `${HOST}/users`;
@@ -7,6 +8,9 @@ const request = async (path, options = {}) => {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...(getAuthToken()
+        ? { Authorization: `Bearer ${getAuthToken()}` }
+        : {}),
       ...(options.headers || {}),
     },
     ...options,

@@ -169,10 +169,7 @@ const DashLayout = () => {
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
   const authType = String(getAuthType() || '').toLowerCase();
-  const canAccessUsersPage = authType !== 'editor' && authType !== 'viewer';
-  const visibleNavItems = dashboardNavItems.filter(
-    (item) => item.to !== '/dashboard/users' || canAccessUsersPage
-  );
+  const isAdmin = authType === 'admin';
 
   useEffect(() => {
     if (!authenticated) {
@@ -180,12 +177,12 @@ const DashLayout = () => {
       return;
     }
 
-    if (!canAccessUsersPage && location.pathname === '/dashboard/users') {
-      navigate('/dashboard/articles');
+    if (!isAdmin) {
+      navigate('/');
     }
-  }, [authenticated, canAccessUsersPage, location.pathname, navigate]);
+  }, [authenticated, isAdmin, navigate]);
 
-  if (!authenticated) {
+  if (!authenticated || !isAdmin) {
     return null;
   }
 
@@ -250,7 +247,7 @@ const DashLayout = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {visibleNavItems.map(({ label, to, icon }) => (
+          {dashboardNavItems.map(({ label, to, icon }) => (
             <ListItem key={to} disablePadding sx={{ display: 'block' }}>
               <ListItemButton
                 component={Link}

@@ -59,7 +59,6 @@ const SignUpPage = () => {
         gender: form.gender.trim().toLowerCase(),
         contactNumber: form.contactNumber.trim(),
         email: form.email.trim().toLowerCase(),
-        role: 'editor',
         username: form.username.trim().toLowerCase(),
         password: form.password,
         address: form.address.trim(),
